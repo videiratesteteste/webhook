@@ -6,13 +6,13 @@ app = Flask(__name__)
 def pagina_dashboard():
     return '<h1>Webhook Z-API</h1>'
 
-@app.route('/rec_msg', methods=['PUT'])
+@app.route('/rec_msg', methods=['POST'])
 def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
     return jsonify({'status': 'success'}), 200
 
-@app.route('/msg_env', methods=['PUT'])
+@app.route('/msg_env', methods=['POST'])
 def enviar():
     data = request.get_json()
     print("Dados enviados:", data)
