@@ -18,5 +18,29 @@ def enviar():
     print("Dados enviados:", data)
     return jsonify({'status': 'success'}), 200
 
+@app.route('/Presenca', methods=['POST'])
+def Presenca():
+    data = request.get_json()
+    print("Dados enviados:", data)
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/msg_status', methods=['POST'])
+def status():
+    data = request.get_json()
+    print("Dados enviados:", data)
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/conectar', methods=['POST'])
+def conectar():
+    data = request.get_json()
+    print("Dados enviados:", data)
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/desconectar', methods=['POST'])
+def desconectar():
+    data = request.get_json()
+    print("Dados enviados:", data)
+    return jsonify({'status': 'success'}), 200
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=True)
