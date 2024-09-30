@@ -21,25 +21,25 @@ def enviar():
 @app.route('/Presenca', methods=['POST'])
 def Presenca():
     data = request.get_json()
-    print("Dados enviados:", data)
+    print("Dados Presenca:", data)
     return jsonify({'status': 'success'}), 200
 
 @app.route('/msg_status', methods=['POST'])
 def status():
     data = request.get_json()
-    print("Dados enviados:", data)
+    print("Status msg:", data)
     return jsonify({'status': 'success'}), 200
 
 @app.route('/conectar', methods=['POST'])
 def conectar():
     data = request.get_json()
-    print("Dados enviados:", data)
+    print("Instancia on:", data)
     return jsonify({'status': 'success'}), 200
 
 @app.route('/desconectar', methods=['POST'])
 def desconectar():
     data = request.get_json()
-    print("Dados enviados:", data)
+    print("Instancia off:", data)
     return jsonify({'status': 'success'}), 200
 
 if __name__ == '__main__':
