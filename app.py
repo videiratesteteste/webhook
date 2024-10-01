@@ -20,10 +20,12 @@ def receber():
     # Verificar se 'text' e 'message' estão presentes
     if 'text' in data and 'message' in data['text']:
         texto = data['text']['message']
+        print('text está presente no json')
     else:
+       print('text n esta presente no json')
        return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400 
     if 'analise:' in texto.lower():
-
+        print('analise está presente no texto')
         # enviar msg
 
         url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
@@ -63,7 +65,8 @@ def receber():
 
         # if response.status_code == 200:
         #     print(response.json())
-
+    else:
+        print('analise n esta presente no json')
 
     return jsonify({'status': 'success'}), 200
 
