@@ -41,6 +41,9 @@ def receber():
 
         response = requests.post(url, headers=headers, data=data)
 
+        if response.status_code == 200:
+            print(response.json())
+
         # message_parts = texto.split(':')
         # if len(message_parts) > 1:
         #     mensagem_para_analisar = message_parts[1].strip()
