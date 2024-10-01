@@ -17,29 +17,43 @@ def pagina_dashboard():
 def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
+    print(type(data))
 
-    if 'Analise:' in data['message']:
+    if 'message' in data and 'Analise:' in data['message']:
 
-        # enviar msg
+        if 'Analise:' in data['message']:
 
-        url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
+            # enviar msg
 
-        data = json.dumps({
-            "phone": data['phone'],
-            "message": str(analyzer.predict(data['message'].split(':')[1]))
-        })
-        headers = {
-            "Content-Type": "application/json",
-            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
-        }
-
-        response = requests.post(url, headers=headers, data=data)
-
-        if response.status_code == 200:
-            print(response.json())
+            url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 
 
+            message_parts = data['message'].split(':')
+            if len(message_parts) > 1:
+                mensagem_para_analisar = message_parts[1].strip()
+            else:
+                return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
 
+
+            resultado_analise = analyzer.predict(mensagem_para_analisar)
+            message = resultado_analise.output  # Isso retornará 'POS', 'NEG' ou 'NEU'
+
+            data = {
+                "phone": data['phone'],
+                "message": message
+            }
+
+            headers = {
+                "Content-Type": "application/json",
+                "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+            }
+
+            response = requests.post(url, headers=headers, data=data)
+
+            if response.status_code == 200:
+                print(response.json())
+    else:
+        print('N tem "mensage" no index')
 
     return jsonify({'status': 'success'}), 200
 
