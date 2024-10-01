@@ -19,12 +19,25 @@ def receber():
 
     texto = data['text']['message']
 
-    if 'Analise:' in texto:
+    if 'analise:' in texto.lower():
 
         # enviar msg
 
         url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 
+
+
+        data = {
+            "phone": data['phone'],
+            "message": "Estamos analisando sua frase:"
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+        }
+
+        response = requests.post(url, headers=headers, data=data)
 
         message_parts = texto.split(':')
         if len(message_parts) > 1:
