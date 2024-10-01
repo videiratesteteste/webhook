@@ -1,9 +1,5 @@
 from flask import Flask, request, jsonify
 import requests
-import json
-# from pysentimiento import create_analyzer
-
-# analyzer = create_analyzer(task="sentiment", lang="pt")
 
 app = Flask(__name__)
 
@@ -15,23 +11,23 @@ def pagina_dashboard():
 def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
-    print(type(data))
 
     # Verificar se 'text' e 'message' estão presentes
     if 'text' in data and 'message' in data['text']:
         texto = data['text']['message']
         print('text está presente no json')
     else:
-       print('text n esta presente no json')
-       return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400 
+        print('text não está presente no json')
+        return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
+
     if 'analise:' in texto.lower():
         print('analise está presente no texto')
-        # enviar msg
-
+        
+        # Configurar a URL e os dados para enviar a mensagem
         url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 
-        data = {
-            "phone": data['phone'],
+        payload = {
+            "phone": data.get('phone'),
             "message": "Estamos analisando sua frase:"
         }
         headers = {
@@ -39,39 +35,47 @@ def receber():
             "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
         }
 
-        response = requests.post(url, headers=headers, data=data)
+        # Enviar a requisição POST
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code == 200:
-            print(response.json())
+            print("Mensagem enviada com sucesso:", response.json())
+            return jsonify({'status': 'success', 'message': 'Mensagem enviada com sucesso'}), 200
+        else:
+            print("Erro ao enviar mensagem:", response.text)
+            return jsonify({'status': 'error', 'message': 'Falha ao enviar mensagem'}), response.status_code
 
-        # message_parts = texto.split(':')
-        # if len(message_parts) > 1:
-        #     mensagem_para_analisar = message_parts[1].strip()
-        # else:
-        #     return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
+    return jsonify({'status': 'error', 'message': 'A frase não contém a palavra-chave correta'}), 400
 
 
-        # resultado_analise = analyzer.predict(mensagem_para_analisar)
-        # message = str(resultado_analise)  # Isso retornará 'POS', 'NEG' ou 'NEU'
+    #     # message_parts = texto.split(':')
+    #     # if len(message_parts) > 1:
+    #     #     mensagem_para_analisar = message_parts[1].strip()
+    #     # else:
+    #     #     return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
 
-        # data = {
-        #     "phone": data['phone'],
-        #     "message": message
-        # }
 
-        # headers = {
-        #     "Content-Type": "application/json",
-        #     "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
-        # }
+    #     # resultado_analise = analyzer.predict(mensagem_para_analisar)
+    #     # message = str(resultado_analise)  # Isso retornará 'POS', 'NEG' ou 'NEU'
 
-        # response = requests.post(url, headers=headers, data=data)
+    #     # data = {
+    #     #     "phone": data['phone'],
+    #     #     "message": message
+    #     # }
 
-        # if response.status_code == 200:
-        #     print(response.json())
-    else:
-        print('analise n esta presente no json')
+    #     # headers = {
+    #     #     "Content-Type": "application/json",
+    #     #     "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+    #     # }
 
-    return jsonify({'status': 'success'}), 200
+    #     # response = requests.post(url, headers=headers, data=data)
+
+    #     # if response.status_code == 200:
+    #     #     print(response.json())
+    # else:
+    #     print('analise n esta presente no json')
+
+    # return jsonify({'status': 'success'}), 200
 
 @app.route('/msg_env', methods=['POST'])
 def enviar():
