@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify
 import requests
+from pysentimiento import create_analyzer
+analyzer = create_analyzer(task="sentiment", lang="pt")
+
+
 
 app = Flask(__name__)
 
@@ -38,6 +42,19 @@ def receber():
         # Enviar a requisição POST
         response = requests.post(url, headers=headers, json=payload)
 
+        payload = {
+            "phone": data.get('phone'),
+            "message": str(analyzer.predict(texto.lower()))
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+        }
+
+        # Enviar a requisição POST
+        response = requests.post(url, headers=headers, json=payload)
+
+
         if response.status_code == 200:
             print("Mensagem enviada com sucesso:", response.json())
             return jsonify({'status': 'success', 'message': 'Mensagem enviada com sucesso'}), 200
@@ -48,34 +65,6 @@ def receber():
     return jsonify({'status': 'error', 'message': 'A frase não contém a palavra-chave correta'}), 400
 
 
-    #     # message_parts = texto.split(':')
-    #     # if len(message_parts) > 1:
-    #     #     mensagem_para_analisar = message_parts[1].strip()
-    #     # else:
-    #     #     return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
-
-
-    #     # resultado_analise = analyzer.predict(mensagem_para_analisar)
-    #     # message = str(resultado_analise)  # Isso retornará 'POS', 'NEG' ou 'NEU'
-
-    #     # data = {
-    #     #     "phone": data['phone'],
-    #     #     "message": message
-    #     # }
-
-    #     # headers = {
-    #     #     "Content-Type": "application/json",
-    #     #     "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
-    #     # }
-
-    #     # response = requests.post(url, headers=headers, data=data)
-
-    #     # if response.status_code == 200:
-    #     #     print(response.json())
-    # else:
-    #     print('analise n esta presente no json')
-
-    # return jsonify({'status': 'success'}), 200
 
 @app.route('/msg_env', methods=['POST'])
 def enviar():
