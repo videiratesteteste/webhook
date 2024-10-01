@@ -5,8 +5,6 @@ import json
 
 analyzer = create_analyzer(task="sentiment", lang="pt")
 
-print(analyzer.predict("Gostei da oferta porem no momento não consigo realizar o pagamento"))
-# returns AnalyzerOutput(output=POS, probas={POS: 0.998, NEG: 0.002, NEU: 0.000})
 app = Flask(__name__)
 
 @app.route('/')
@@ -36,7 +34,7 @@ def receber():
 
 
         resultado_analise = analyzer.predict(mensagem_para_analisar)
-        message = resultado_analise.output  # Isso retornará 'POS', 'NEG' ou 'NEU'
+        message = str(resultado_analise)  # Isso retornará 'POS', 'NEG' ou 'NEU'
 
         data = {
             "phone": data['phone'],
@@ -68,11 +66,11 @@ def Presenca():
     print("Dados Presenca:", data)
     return jsonify({'status': 'success'}), 200
 
-@app.route('/msg_status', methods=['POST'])
-def status():
-    data = request.get_json()
-    print("Status msg:", data)
-    return jsonify({'status': 'success'}), 200
+# @app.route('/msg_status', methods=['POST'])
+# def status():
+#     data = request.get_json()
+#     print("Status msg:", data)
+#     return jsonify({'status': 'success'}), 200
 
 @app.route('/conectar', methods=['POST'])
 def conectar():
