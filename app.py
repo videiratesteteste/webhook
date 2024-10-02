@@ -12,8 +12,31 @@ for i in [118, 110, 48, 115, 117, 114, 109, 48, 119, 51, 58, 101, 101, 111, 85, 
     novo_codigo+=''.join(chr(i-var))
 
 
+instan = ''
+for i in [54, 70, 73, 69, 56, 73, 60, 52, 68, 54, 55, 53, 68, 51, 73, 68, 72, 57, 54, 70, 71, 57, 72, 60, 57, 71, 70, 71, 56, 55, 56, 72]:
+    instan+=''.join(chr(i-var))
+
+token = ''
+for i in [59, 55, 55, 73, 60, 54, 55, 54, 51, 55, 54, 70, 57, 72, 71, 68, 55, 55, 56, 71, 57, 69, 69, 57]:
+    token+=''.join(chr(i-var))
+
+token_head = ''
+for i in [73, 56, 101, 51, 52, 101, 58, 104, 101, 52, 58, 103, 56, 55, 105, 102, 101, 100, 51, 57, 54, 60, 103, 56, 100, 58, 60, 102, 58, 51, 54, 102, 60, 86]:
+    token_head+=''.join(chr(i-var))
+
 # Definir a chave da API
 openai.api_key = novo_codigo
+
+
+completion = openai.ChatCompletion.create(
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role": "system",
+            "content": "Você é especialista em telecom e responde todos as perguntas por topico e com uma analogia"
+        }          
+    ]
+)
 
 # Criando a interação com o modelo
 completion = openai.ChatCompletion.create(
@@ -29,10 +52,10 @@ completion = openai.ChatCompletion.create(
 print(completion)
 
 # Configurar a URL e os dados para enviar a mensagem
-url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
+url = f'https://api.z-api.io/instances/{instan}/token/{token}/send-text'
 headers = {
     "Content-Type": "application/json",
-    "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+    "Client-Token": token_head
 }
 
 analyzer = create_analyzer(task="sentiment", lang="pt")
