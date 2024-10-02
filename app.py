@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 import requests
 from pysentimiento import create_analyzer
 import openai
+# Definir a chave da API
+openai.api_key = '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'
 
 analyzer = create_analyzer(task="sentiment", lang="pt")
 
