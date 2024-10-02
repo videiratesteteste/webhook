@@ -46,8 +46,8 @@ completion = openai.ChatCompletion.create(
             "role": "user",
             "content": 'teste'
         },
-    ],
-    max_tokens=150
+    ]
+    # , max_tokens=150
 )
 print(completion)
 
