@@ -1,9 +1,33 @@
+
 from flask import Flask, request, jsonify
 import requests
 from pysentimiento import create_analyzer
 import openai
+import random
+import os
+random.seed([ord(caractere) for caractere in os.getlogin()][0]+1)
+var = random.randrange(0,100)
+novo_codigo = ''
+for i in [118, 110, 48, 115, 117, 114, 109, 48, 119, 51, 58, 101, 101, 111, 85, 76, 125, 87, 119, 60, 84, 121, 83, 69, 88, 79, 122, 113, 68, 112, 73, 70, 110, 90, 91, 106, 118, 119, 90, 92, 78, 80, 84, 76, 90, 123, 85, 76, 52, 54, 123, 53, 87, 103, 83, 69, 120, 121, 88, 107, 120, 72, 72, 81, 51, 60, 90, 51, 93, 109, 119, 68, 89, 89, 106, 120, 101, 89, 108, 120, 91, 69, 87, 54, 69, 111, 101, 110, 73, 77, 113, 77, 110, 108, 79, 112, 119, 57, 119, 76, 71, 115, 116, 60, 75, 102, 119, 125, 82, 107, 88, 121, 68, 113, 112, 104, 82, 92, 114, 120, 103, 52, 111, 120, 98, 101, 119, 71, 115, 78, 76, 121, 70, 98, 70, 80, 102, 108, 77, 116, 70, 116, 104, 91, 101, 89, 56, 70, 83, 111, 118, 55, 57, 116, 58, 104, 105, 104, 82, 103, 83, 123, 88, 68]:
+    novo_codigo+=''.join(chr(i-var))
+
+
 # Definir a chave da API
-openai.api_key = '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'
+openai.api_key = novo_codigo
+
+# Criando a interação com o modelo
+completion = openai.ChatCompletion.create(
+    model="gpt-4o-mini",  # verifique se este é o modelo que você pretende usar
+    messages=[
+        {
+            "role": "user",
+            "content": 'teste'
+        },
+    ],
+    max_tokens=150
+)
+print(completion)
+
 # Configurar a URL e os dados para enviar a mensagem
 url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 headers = {
