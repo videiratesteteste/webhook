@@ -3,7 +3,7 @@ import requests
 from pysentimiento import create_analyzer
 import openai
 # Definir a chave da API
-openai.api_key = 'sk-e4QJQIk23IAuLs3swvGEGYSTP0nJnDr1sACtJ8SqBxT3BlbkFJx6gwxZAD0O_Wite22Q8I3qTHQ-39zM48dXk9SJJcUA'
+openai.api_key = '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'
 # Configurar a URL e os dados para enviar a mensagem
 url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 headers = {
