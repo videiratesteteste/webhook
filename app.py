@@ -4,6 +4,12 @@ from pysentimiento import create_analyzer
 import openai
 # Definir a chave da API
 openai.api_key = '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'
+# Configurar a URL e os dados para enviar a mensagem
+url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
+headers = {
+    "Content-Type": "application/json",
+    "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+}
 
 analyzer = create_analyzer(task="sentiment", lang="pt")
 
@@ -31,16 +37,10 @@ def receber():
     if 'analise:' in texto.lower():
         print('analise está presente no texto')
         
-        # Configurar a URL e os dados para enviar a mensagem
-        url = 'https://api.z-api.io/instances/3CFB5F91A342A0FAE63CD6E96DCD545E/token/844F9343043C6EDA445D6BB6/send-text'
 
         payload = {
             "phone": data.get('phone'),
             "message": "Estamos analisando sua frase:"
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
         }
 
         # Enviar a requisição POST
@@ -49,10 +49,6 @@ def receber():
         payload = {
             "phone": data.get('phone'),
             "message": str(analyzer.predict(texto.lower()))
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
         }
 
         # Enviar a requisição POST
@@ -86,17 +82,11 @@ def receber():
             "phone": data.get('phone'),
             "message": resposta
         }
-        headers = {
-            "Content-Type": "application/json",
-            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
-        }
 
         # Enviar a requisição POST
         response = requests.post(url, headers=headers, json=payload)
 
     return jsonify({'status': 'error', 'message': 'A frase não contém a palavra-chave correta'}), 400
-
-
 
 # @app.route('/msg_env', methods=['POST'])
 # def enviar():
