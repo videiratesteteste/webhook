@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import requests
 from pysentimiento import create_analyzer
+import openai
+
 analyzer = create_analyzer(task="sentiment", lang="pt")
 
 
@@ -62,15 +64,43 @@ def receber():
             print("Erro ao enviar mensagem:", response.text)
             return jsonify({'status': 'error', 'message': 'Falha ao enviar mensagem'}), response.status_code
 
+    else:
+        # Criando a interação com o modelo
+        completion = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # verifique se este é o modelo que você pretende usar
+            messages=[
+                {
+                    "role": "user",
+                    "content": data['text']['message']
+                },
+            ],
+            max_tokens=150
+        )
+
+        # Obtendo a resposta
+        resposta = completion['choices'][0]['message']['content']
+
+        payload = {
+            "phone": data.get('phone'),
+            "message": resposta
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Client-Token": "F5b01b7eb17d54fcba0639d5a79c703c9S"
+        }
+
+        # Enviar a requisição POST
+        response = requests.post(url, headers=headers, json=payload)
+
     return jsonify({'status': 'error', 'message': 'A frase não contém a palavra-chave correta'}), 400
 
 
 
-@app.route('/msg_env', methods=['POST'])
-def enviar():
-    data = request.get_json()
-    print("Dados enviados:", data)
-    return jsonify({'status': 'success'}), 200
+# @app.route('/msg_env', methods=['POST'])
+# def enviar():
+#     data = request.get_json()
+#     print("Dados enviados:", data)
+#     return jsonify({'status': 'success'}), 200
 
 # @app.route('/Presenca', methods=['POST'])
 # def Presenca():
@@ -78,11 +108,11 @@ def enviar():
 #     print("Dados Presenca:", data)
 #     return jsonify({'status': 'success'}), 200
 
-# @app.route('/msg_status', methods=['POST'])
-# def status():
-#     data = request.get_json()
-#     print("Status msg:", data)
-#     return jsonify({'status': 'success'}), 200
+@app.route('/msg_status', methods=['POST'])
+def status():
+    data = request.get_json()
+    print("Status msg:", data)
+    return jsonify({'status': 'success'}), 200
 
 # @app.route('/conectar', methods=['POST'])
 # def conectar():
