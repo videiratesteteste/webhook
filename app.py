@@ -28,28 +28,6 @@ for i in [73, 56, 101, 51, 52, 101, 58, 104, 101, 52, 58, 103, 56, 55, 105, 102,
 openai.api_key = novo_codigo
 
 
-completion = openai.ChatCompletion.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role": "system",
-            "content": "Você é especialista em telecom, as respostas tem que ter no maximo 400 letras"
-        }       
-    ],    max_tokens=200
-)
-
-# Criando a interação com o modelo
-completion = openai.ChatCompletion.create(
-    model="gpt-4o-mini",  # verifique se este é o modelo que você pretende usar
-    messages=[
-        {
-            "role": "user",
-            "content": 'teste'
-        },
-    ]
-    # , max_tokens=150
-)
-print(completion)
 
 # Configurar a URL e os dados para enviar a mensagem
 url = f'https://api.z-api.io/instances/{instan}/token/{token}/send-text'
@@ -114,6 +92,10 @@ def receber():
         completion = openai.ChatCompletion.create(
             model="gpt-4o-mini",  # verifique se este é o modelo que você pretende usar
             messages=[
+                {
+                    "role": "system",
+                    "content": "Você é especialista em telecom, as respostas tem que ter no maximo 400 letras"
+                },   
                 {
                     "role": "user",
                     "content": data['text']['message']
