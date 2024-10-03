@@ -33,9 +33,9 @@ completion = openai.ChatCompletion.create(
     messages=[
         {
             "role": "system",
-            "content": "Você é especialista em telecom,qualquer pergunta que sair desse tema fale que infelizmente n pode ajudar, as respostas tem que ser rasoavelmente curta."
+            "content": "Você é especialista em telecom, as respostas tem que ter no maximo 400 letras"
         }       
-    ]
+    ],    max_tokens=200
 )
 
 # Criando a interação com o modelo
@@ -118,6 +118,12 @@ def receber():
                     "role": "user",
                     "content": data['text']['message']
                 },
+                {
+                    "role": "assistant",
+                    "content": "qualquer pergunta que sair do tema Telecom, fale que infelizmente n pode ajudar"
+                }   
+
+
             ],
             max_tokens=150
         )
