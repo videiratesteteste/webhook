@@ -33,7 +33,7 @@ completion = openai.ChatCompletion.create(
     messages=[
         {
             "role": "system",
-            "content": "Você é especialista em telecom e responde todos as perguntas por topico e com uma analogia, porem tem que ser uma resposta rasoavelmente curta, devido a ser colocada dentro de uma resposta no Whatsapp, não pode fugir do tema telecom."
+            "content": "Você é especialista em telecom,qualquer pergunta que sair desse tema fale que infelizmente n pode ajudar, as respostas tem que ser rasoavelmente curta."
         }       
     ]
 )
