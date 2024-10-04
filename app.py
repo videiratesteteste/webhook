@@ -1,10 +1,11 @@
 
 from flask import Flask, request, jsonify
 import requests
-from pysentimiento import create_analyzer
-import openai
+from openai import OpenAI
 import random
 import os
+import pymongo
+import re
 random.seed([ord(caractere) for caractere in 'python'][0]+1)
 var = random.randrange(0,100)
 novo_codigo = ''
@@ -25,8 +26,7 @@ for i in [73, 56, 101, 51, 52, 101, 58, 104, 101, 52, 58, 103, 56, 55, 105, 102,
     token_head+=''.join(chr(i-var))
 
 # Definir a chave da API
-openai.api_key = novo_codigo
-
+client = OpenAI(api_key=novo_codigo)
 
 
 # Configurar a URL e os dados para enviar a mensagem
@@ -35,9 +35,6 @@ headers = {
     "Content-Type": "application/json",
     "Client-Token": token_head
 }
-
-analyzer = create_analyzer(task="sentiment", lang="pt")
-
 
 
 app = Flask(__name__)
@@ -51,77 +48,93 @@ def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
 
-    # Verificar se 'text' e 'message' estão presentes
-    if 'text' in data and 'message' in data['text']:
-        texto = data['text']['message']
-        print('text está presente no json')
-    else:
-        print('text não está presente no json')
-        return jsonify({'status': 'error', 'message': 'Formato inválido'}), 400
 
-    if 'analise:' in texto.lower():
-        print('analise está presente no texto')
+
+    # Conectar ao MongoDB
+    BD_mongo = pymongo.MongoClient('mongodb://mongo:ByLIFOINXzCqBohFiphXXrHxWDgAUBgV@junction.proxy.rlwy.net:13265')
+
+    # Selecionar ou criar um banco de dados
+    db = BD_mongo["Chatbot"]
+
+    # Criar uma coleção (tabela)
+    collection = db["Conversas"]
+
+
+    if len(collection.find({"connectedPhone": data["connectedPhone"]}).distinct("connectedPhone")) == 0:
+        conversa = {
+            "connectedPhone": data["connectedPhone"],
+            "messagens" : [
+                {
+                "role" : "user",
+                "content" : data['text']['message']
+                }
+        ]}
+
+        # Inserir um documento (registro) na coleção
+        resultado = collection.insert_one(conversa)    
         
-
-        payload = {
-            "phone": data.get('phone'),
-            "message": "Estamos analisando sua frase:"
-        }
-
-        # Enviar a requisição POST
-        response = requests.post(url, headers=headers, json=payload)
-
-        payload = {
-            "phone": data.get('phone'),
-            "message": str(analyzer.predict(texto.lower()))
-        }
-
-        # Enviar a requisição POST
-        response = requests.post(url, headers=headers, json=payload)
-
-
-        if response.status_code == 200:
-            print("Mensagem enviada com sucesso:", response.json())
-            return jsonify({'status': 'success', 'message': 'Mensagem enviada com sucesso'}), 200
-        else:
-            print("Erro ao enviar mensagem:", response.text)
-            return jsonify({'status': 'error', 'message': 'Falha ao enviar mensagem'}), response.status_code
+        print(f'Documento inserido com o ID: {resultado.inserted_id}')
 
     else:
-        # Criando a interação com o modelo
-        completion = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # verifique se este é o modelo que você pretende usar
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Você é especialista em telecom, as respostas tem que ter no maximo 400 letras"
-                },   
-                {
-                    "role": "user",
-                    "content": data['text']['message']
-                },
-                {
-                    "role": "assistant",
-                    "content": "qualquer pergunta que sair do tema Telecom, fale que infelizmente n pode ajudar"
-                }   
+        conversas = [conversa for conversa in collection.find({"connectedPhone": data["connectedPhone"]})][0]
 
-
-            ],
-            max_tokens=150
+        conversas['messagens'].extend([
+                    {
+                    "role" : "user",
+                    "content" : data['text']['message']
+                    }]
+            )
+        # Atualizando o documento com a lista de mensagens correta
+        collection.update_one(
+            {"connectedPhone": data["connectedPhone"]},  # Filtro para encontrar o documento
+            {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
         )
 
-        # Obtendo a resposta
-        resposta = completion['choices'][0]['message']['content']
+    
+    # extrai os dados concatenados
+    conversas = [conversa for conversa in collection.find({"connectedPhone": data["connectedPhone"]})][0]
 
-        payload = {
-            "phone": data.get('phone'),
-            "message": resposta
-        }
 
-        # Enviar a requisição POST
-        response = requests.post(url, headers=headers, json=payload)
 
-    return jsonify({'status': 'error', 'message': 'A frase não contém a palavra-chave correta'}), 400
+    # Crie um thread (historico da mensagem)  e anexe o arquivo à mensagem
+    thread = client.beta.threads.create(
+    messages=conversas['messagens']
+    )
+
+
+
+    # Use o auxiliar create_and_poll para criar uma execução e pesquisar o status da execução até que esteja em um estado terminal.
+    run = client.beta.threads.runs.create_and_poll(
+        thread_id=thread.id, assistant_id="asst_xdMQqU2GLtTnn1brWbXn23MT"
+    )
+
+    # extrai o historico da conversa junto com a resposta da API a pergunta do cliente
+    messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
+
+
+    message_content = messages[0].content[0].text.value
+
+    # Regex para remover o conteúdo entre 【 e 】
+    cleaned_content = re.sub(r'【.*?】', '', message_content)
+
+    conversas['messagens'].append({"role": "assistant", "content": cleaned_content})
+    conversas['messagens']
+    # Atualizando o documento com a lista de mensagens correta
+    collection.update_one(
+        {"_id": resultado.inserted_id},  # Filtro para encontrar o documento
+        {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
+    )
+
+
+    payload = {
+        "phone": data.get('phone'),
+        "message": cleaned_content
+    }
+
+    # Enviar a requisição POST
+    response = requests.post(url, headers=headers, json=payload)
+
+    return response,200
 
 # @app.route('/msg_env', methods=['POST'])
 # def enviar():
