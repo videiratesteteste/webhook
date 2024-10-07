@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 import requests
 from openai import OpenAI
@@ -6,7 +5,7 @@ import random
 import os
 import pymongo
 import re
-
+import json
 
 random.seed([ord(caractere) for caractere in 'python'][0]+1)
 var = random.randrange(0,100)
@@ -53,6 +52,7 @@ def receber():
 
     # Conectar ao MongoDB
     BD_mongo = pymongo.MongoClient('mongodb://mongo:ByLIFOINXzCqBohFiphXXrHxWDgAUBgV@junction.proxy.rlwy.net:13265')
+
 
     # Selecionar ou criar um banco de dados
     db = BD_mongo["Chatbot"]
@@ -111,29 +111,102 @@ def receber():
 
     # Use o auxiliar create_and_poll para criar uma execução e pesquisar o status da execução até que esteja em um estado terminal.
     run = client.beta.threads.runs.create_and_poll(
-        thread_id=thread.id, assistant_id='asst_iZxgJLRWdQw1mgxz8fshkPZP'
+    thread_id=thread.id,
+    assistant_id="asst_Qc2kUpoSzyLUYiTZHqeKhVMY",
     )
+    
+    if run.status == 'completed':
+        messages = client.beta.threads.messages.list(
+            thread_id=thread.id
+        )
+        print(messages)
+    else:
+        print(run.status)
+        print('erro')
+        
 
-    # extrai o historico da conversa junto com a resposta da API a pergunta do cliente
-    messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
+    if run.required_action != None:
+
+      # interage com a ultima pergunta do usuario
+      tool = run.required_action.submit_tool_outputs.tool_calls[-1]
+
+      if tool.function.name == "buscar_documento_data":
+        url = 'https://api-dados.onrender.com/buscar_cliente'
+        headers = {"Content-Type": "application/json"}
+        data = tool.function.arguments
+
+        # Realizar a requisição
+        response = requests.get(url=url, data=data, headers=headers)
+
+        # Converter a resposta JSON em um dicionário Python
+        response_json = response.json()
+
+        # Verificar o tipo de 'body' antes de processar
+        body_content = response_json.get('body', None)
+
+        if body_content:
+
+          # Se for uma string JSON, decodificar, caso contrário, apenas exibir o valor
+          if isinstance(body_content, str):
+
+            try:
+              decoded_body = json.loads(body_content)
+              print(decoded_body)  # Conteúdo decodificado corretamente
+
+            except json.JSONDecodeError:
+              print("Erro ao decodificar o conteúdo JSON.")
+
+          else:
+            # Se já for uma lista ou dicionário, exibir diretamente
+            print(body_content)
+
+        else:
+          print("Chave 'body' não encontrada na resposta.")
 
 
-    message_content = messages[0].content[0].text.value
+      # Submit all tool outputs at once after collecting them in a list
+      if decoded_body:
+        try:
+          run = client.beta.threads.runs.submit_tool_outputs_and_poll(
+            thread_id=thread.id,
+            run_id=run.id,
+      
+            tool_outputs=[{"tool_call_id": tool.id,
+                          "output": str(decoded_body)}]
+          )
+          print("Tool outputs submitted successfully.")
+        except Exception as e:
+          print("Failed to submit tool outputs:", e)
+      else:
+        print("No tool outputs to submit.")
+    
+      if run.status == 'completed':
+        messages = client.beta.threads.messages.list(
+          thread_id=thread.id
+        )
+        print(messages)
+      else:
+        print(run.status)
 
-    # Regex para remover o conteúdo entre 【 e 】
-    cleaned_content = re.sub(r'【.*?】', '', message_content)
+      resposta = messages.data[0].content[0].text.value
+      print(resposta)
 
-    conversas['messagens'].append({"role": "assistant", "content": cleaned_content})
+    else:
+      print('nenhum metodo aplicado')
+      resposta = messages.data[0].content[0].text.value
+      print(resposta)
+      
+    conversas['messagens'].append({"role": "assistant", "content": resposta})
+    conversas['messagens']
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
-        {"phone": data["phone"]},  # Filtro para encontrar o documento
+        {"_id": resultado.inserted_id},  # Filtro para encontrar o documento
         {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
     )
 
-
     payload = {
         "phone": data.get('phone'),
-        "message": cleaned_content
+        "message": resultado
     }
 
     # Enviar a requisição POST
