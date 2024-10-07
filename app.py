@@ -206,7 +206,7 @@ def receber():
 
     payload = {
         "phone": data.get('phone'),
-        "message": resultado
+        "message": resposta
     }
 
     # Configurar a URL e os dados para enviar a mensagem
