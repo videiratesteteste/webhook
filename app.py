@@ -209,6 +209,13 @@ def receber():
         "message": resultado
     }
 
+    # Configurar a URL e os dados para enviar a mensagem
+    url = f'https://api.z-api.io/instances/{instan}/token/{token}/send-text'
+    headers = {
+        "Content-Type": "application/json",
+        "Client-Token": token_head
+    }
+
     # Enviar a requisição POST
     response = requests.post(url, headers=headers, json=payload)
 
