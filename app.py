@@ -96,12 +96,17 @@ def receber():
     conversas = [conversa for conversa in collection.find({"phone": data["phone"]})][0]
 
 
-
-    # Crie um thread (historico da mensagem)  e anexe o arquivo à mensagem
-    thread = client.beta.threads.create(
-    messages=conversas['messagens'][-32:]
-    )
-
+    if len(conversas['messagens']) > 32:
+        # Crie um thread (historico da mensagem)  e anexe o arquivo à mensagem
+        thread = client.beta.threads.create(
+        messages=conversas['messagens'][-32:]
+        )
+        
+    else:
+        # Crie um thread (historico da mensagem)  e anexe o arquivo à mensagem
+        thread = client.beta.threads.create(
+        messages=conversas['messagens']
+        )
 
 
     # Use o auxiliar create_and_poll para criar uma execução e pesquisar o status da execução até que esteja em um estado terminal.
@@ -119,7 +124,6 @@ def receber():
     cleaned_content = re.sub(r'【.*?】', '', message_content)
 
     conversas['messagens'].append({"role": "assistant", "content": cleaned_content})
-    conversas['messagens']
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
         {"phone": data["phone"]},  # Filtro para encontrar o documento
