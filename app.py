@@ -200,9 +200,10 @@ def receber():
     conversas['messagens']
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
-        {"_id": resultado.inserted_id},  # Filtro para encontrar o documento
+        {"phone": data["phone"]},  # Filtro para encontrar o documento
         {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
     )
+
 
     payload = {
         "phone": data.get('phone'),
