@@ -104,7 +104,7 @@ def receber():
 
     # Use o auxiliar create_and_poll para criar uma execução e pesquisar o status da execução até que esteja em um estado terminal.
     run = client.beta.threads.runs.create_and_poll(
-        thread_id=thread.id, assistant_id="asst_Vi7zHqTp11wqp7EHxOvQq8Fb"
+        thread_id=thread.id, assistant_id='asst_NCxhLNFlG39pRVGiQxFVJS4O'
     )
 
     # extrai o historico da conversa junto com a resposta da API a pergunta do cliente
