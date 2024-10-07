@@ -6,6 +6,8 @@ import random
 import os
 import pymongo
 import re
+
+
 random.seed([ord(caractere) for caractere in 'python'][0]+1)
 var = random.randrange(0,100)
 novo_codigo = ''
@@ -97,7 +99,7 @@ def receber():
 
     # Crie um thread (historico da mensagem)  e anexe o arquivo à mensagem
     thread = client.beta.threads.create(
-    messages=conversas['messagens']
+    messages=conversas['messagens'][-32:]
     )
 
 
