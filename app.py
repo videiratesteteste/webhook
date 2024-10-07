@@ -184,7 +184,6 @@ def receber():
         messages = client.beta.threads.messages.list(
           thread_id=thread.id
         )
-        print(messages)
       else:
         print(run.status)
 
@@ -197,7 +196,7 @@ def receber():
       print(resposta)
       
     conversas['messagens'].append({"role": "assistant", "content": resposta})
-    conversas['messagens']
+
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
         {"phone": data.get('phone')},  # Filtro para encontrar o documento
@@ -212,6 +211,8 @@ def receber():
 
     # Enviar a requisição POST
     response = requests.post(url, headers=headers, json=payload)
+
+    print(response)
 
     return response,200
 
