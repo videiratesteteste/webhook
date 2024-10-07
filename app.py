@@ -36,7 +36,6 @@ headers = {
     "Client-Token": token_head
 }
 
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -60,9 +59,9 @@ def receber():
     collection = db["Conversas"]
 
 
-    if len(collection.find({"connectedPhone": data["connectedPhone"]}).distinct("connectedPhone")) == 0:
+    if len(collection.find({"phone": data["phone"]}).distinct("phone")) == 0:
         conversa = {
-            "connectedPhone": data["connectedPhone"],
+            "phone": data["phone"],
             "messagens" : [
                 {
                 "role" : "user",
@@ -76,7 +75,7 @@ def receber():
         print(f'Documento inserido com o ID: {resultado.inserted_id}')
 
     else:
-        conversas = [conversa for conversa in collection.find({"connectedPhone": data["connectedPhone"]})][0]
+        conversas = [conversa for conversa in collection.find({"phone": data["phone"]})][0]
 
         conversas['messagens'].extend([
                     {
@@ -86,13 +85,13 @@ def receber():
             )
         # Atualizando o documento com a lista de mensagens correta
         collection.update_one(
-            {"connectedPhone": data["connectedPhone"]},  # Filtro para encontrar o documento
+            {"phone": data["phone"]},  # Filtro para encontrar o documento
             {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
         )
 
     
     # extrai os dados concatenados
-    conversas = [conversa for conversa in collection.find({"connectedPhone": data["connectedPhone"]})][0]
+    conversas = [conversa for conversa in collection.find({"phone": data["phone"]})][0]
 
 
 
@@ -121,7 +120,7 @@ def receber():
     conversas['messagens']
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
-        {"_id": resultado.inserted_id},  # Filtro para encontrar o documento
+        {"phone": data["phone"]},  # Filtro para encontrar o documento
         {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
     )
 
