@@ -48,7 +48,7 @@ def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
 
-
+    telefone = data["phone"]
 
     # Conectar ao MongoDB
     BD_mongo = pymongo.MongoClient('mongodb://mongo:ByLIFOINXzCqBohFiphXXrHxWDgAUBgV@junction.proxy.rlwy.net:13265')
@@ -199,13 +199,13 @@ def receber():
 
     # Atualizando o documento com a lista de mensagens correta
     collection.update_one(
-        {"phone": data.get('phone')},  # Filtro para encontrar o documento
+        {"phone": telefone},  # Filtro para encontrar o documento
         {"$set": {"messagens": conversas['messagens']}}  # Atualizar a chave "mensagens"
     )
 
 
     payload = {
-        "phone": data.get('phone'),
+        "phone": telefone,
         "message": resposta
     }
 
