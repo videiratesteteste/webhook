@@ -153,7 +153,7 @@ def receber():
 
     import time 
 
-    time.sleep(3)
+    time.sleep(30)
 
 
     if run.status == 'completed':
@@ -213,7 +213,7 @@ def receber():
       else:
         print("sem saida para envio do retorno")
       
-      time.sleep(3)
+      time.sleep(30)
       if run.status == 'completed':
         print('run status completo')
         messages = client.beta.threads.messages.list(
