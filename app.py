@@ -60,7 +60,7 @@ def receber():
     # Criar uma coleção (tabela)
     collection = db["Conversas"]
 
-
+    # identifica se ja tem o cliente no banco de dados, nao tiver ele cria um historico para o cliente, caso tenha apenas agrega a nova mensagem ao historico
     if len(collection.find({"phone": data["phone"]}).distinct("phone")) == 0:
         conversa = {
             "phone": data["phone"],
@@ -131,7 +131,7 @@ def receber():
       tool = run.required_action.submit_tool_outputs.tool_calls[-1]
 
       if tool.function.name == "buscar_documento_data":
-        url = 'https://api-dados.onrender.com/buscar_cliente'
+        url = 'https://api-dados-wf72.onrender.com/buscar_cliente'
         headers = {"Content-Type": "application/json"}
         data = tool.function.arguments
 
