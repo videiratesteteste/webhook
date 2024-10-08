@@ -153,15 +153,12 @@ def receber():
     import time 
 
     time.sleep(3)
-    if run.status == 'completed':
-        messages = client.beta.threads.messages.list(
-            thread_id=thread.id
-        )
-        print(messages)
-    else:
-        print(run.status)
-        print('erro')
-        
+    messages = client.beta.threads.messages.list(
+        thread_id=thread.id
+    )
+    print(messages)
+
+    
 
     if run.required_action != None:
 
