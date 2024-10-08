@@ -174,6 +174,7 @@ def receber():
       if tool.function.name == "buscar_documento_data":
 
         print(tool.function.arguments)
+        print(tool.function.name)
 
         url = 'https://api-dados-wf72.onrender.com/buscar_cliente'
         headers = {"Content-Type": "application/json"}
@@ -185,16 +186,15 @@ def receber():
         # Converter a resposta JSON em um dicionário Python
         response_json = response.json()
 
-        # Verificar o tipo de 'body' antes de processar
+        # Decodificar o campo 'body' da resposta
         body_content = response_json.get('body', None)
 
         if body_content:
-
-          decoded_body = json.loads(body_content)
-          print(decoded_body)  # Conteúdo decodificado corretamente
-
+            # Decodificar a string JSON para um objeto Python
+            decoded_body = json.loads(body_content)  # Decodifica corretamente o conteúdo
+            print(decoded_body)  # Agora você pode acessar os dados corretamente
         else:
-          print("Chave 'body' não encontrada na resposta.")
+            print("Chave 'body' não encontrada na resposta.")
 
 
       # de acordo com o metodo identificado envio o retorno do metodo
@@ -215,6 +215,7 @@ def receber():
       
       time.sleep(3)
       if run.status == 'completed':
+        print('run status completo')
         messages = client.beta.threads.messages.list(
           thread_id=thread.id
         )
