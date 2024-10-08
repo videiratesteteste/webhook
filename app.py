@@ -75,7 +75,7 @@ def receber():
       print('texto do audio: ',transcript.text)
 
       data.pop('audio')
-      data['text'] = transcript.text
+      data['text']= {'message': transcript.text}
 
       print('deu certo a conversao')
 
@@ -126,6 +126,8 @@ def receber():
         )
 
     
+
+
     # extrai os dados concatenados
     conversas = [conversa for conversa in collection.find({"phone": data["phone"]})][0]
 
