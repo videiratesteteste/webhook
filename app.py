@@ -150,9 +150,12 @@ def receber():
     thread_id=thread.id,
     assistant_id="asst_Qc2kUpoSzyLUYiTZHqeKhVMY",
     )
+
     import time 
 
     time.sleep(3)
+
+
     if run.status == 'completed':
         messages = client.beta.threads.messages.list(
             thread_id=thread.id
@@ -194,7 +197,7 @@ def receber():
           print("Chave 'body' não encontrada na resposta.")
 
 
-      # Submit all tool outputs at once after collecting them in a list
+      # de acordo com o metodo identificado envio o retorno do metodo
       if decoded_body:
         try:
           run = client.beta.threads.runs.submit_tool_outputs_and_poll(
@@ -204,18 +207,19 @@ def receber():
             tool_outputs=[{"tool_call_id": tool.id,
                           "output": str(decoded_body)}]
           )
-          print("Tool outputs submitted successfully.")
+          print("retorno enviado com sucesso")
         except Exception as e:
-          print("Failed to submit tool outputs:", e)
+          print("falha ao enviar o retorno:", e)
       else:
-        print("No tool outputs to submit.")
-    
+        print("sem saida para envio do retorno")
+      
+      time.sleep(3)
       if run.status == 'completed':
         messages = client.beta.threads.messages.list(
           thread_id=thread.id
         )
       else:
-        print(run.status)
+        print('status ainda não é completo: ',run.status)
 
       resposta = messages.data[0].content[0].text.value
       print(resposta)
