@@ -156,17 +156,15 @@ def receber():
     time.sleep(3)
 
 
-    while run.status != 'completed':
-        try:
-          messages = client.beta.threads.messages.list(
-              thread_id=thread.id
-          )
-          print(messages)
-          time.sleep(1)
-        except:
-          time.sleep(1)
-          continue
-
+    if run.status == 'completed':
+        messages = client.beta.threads.messages.list(
+            thread_id=thread.id
+        )
+        print(messages)
+    else:
+        print(run.status)
+        print('erro')
+        
 
     if run.required_action != None:
 
@@ -215,18 +213,14 @@ def receber():
       else:
         print("sem saida para envio do retorno")
       
-        
-      while run.status != 'completed':
-          try:
-            messages = client.beta.threads.messages.list(
-                thread_id=thread.id
-            )
-            print(messages)
-            time.sleep(1)
-          except:
-            time.sleep(1)
-            continue
-
+      time.sleep(3)
+      if run.status == 'completed':
+        print('run status completo')
+        messages = client.beta.threads.messages.list(
+          thread_id=thread.id
+        )
+      else:
+        print('status ainda não é completo: ',run.status)
 
       resposta = messages.data[0].content[0].text.value
       print(resposta)
