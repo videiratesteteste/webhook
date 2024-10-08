@@ -48,6 +48,38 @@ def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
 
+    # Verificar o tipo de 'body' antes de processar
+    audio_content = data.get('audio', None)
+
+    if audio_content:
+
+      # Baixar o arquivo de áudio
+      audio_url = data['audio']['audioUrl']
+      audio_response = requests.get(audio_url)
+
+      # Salvar o arquivo de áudio localmente
+      audio_file_path = 'audio.ogg'
+      with open(audio_file_path, 'wb') as audio_file:
+          audio_file.write(audio_response.content)
+
+      # Transcrever o áudio em português
+      with open(audio_file_path, "rb") as audio_file:
+          transcript = client.audio.transcriptions.create(
+              model="whisper-1",
+              file=audio_file,
+              language="pt"  # Definir o idioma como português
+          )
+
+
+      # Exibir a transcrição
+      print('texto do audio: ',transcript.text)
+
+      data.pop('audio')
+      data['text'] = transcript.text
+
+
+
+
     telefone = data["phone"]
 
     # Conectar ao MongoDB
