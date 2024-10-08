@@ -77,8 +77,10 @@ def receber():
       data.pop('audio')
       data['text'] = transcript.text
 
+      print('deu certo a conversao')
 
 
+    print("Dados recebidos:", data)
 
     telefone = data["phone"]
 
