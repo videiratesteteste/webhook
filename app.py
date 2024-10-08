@@ -169,6 +169,9 @@ def receber():
       tool = run.required_action.submit_tool_outputs.tool_calls[-1]
 
       if tool.function.name == "buscar_documento_data":
+
+        print(tool.function.arguments)
+
         url = 'https://api-dados-wf72.onrender.com/buscar_cliente'
         headers = {"Content-Type": "application/json"}
         data = tool.function.arguments
