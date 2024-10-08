@@ -205,7 +205,7 @@ def receber():
             run_id=run.id,
       
             tool_outputs=[{"tool_call_id": tool.id,
-                          "output": str(decoded_body)}]
+                          "output": ['Caso tenha dados aparecendo no output forneça ao cliente',str(decoded_body)]}]
           )
           print("retorno enviado com sucesso")
         except Exception as e:
