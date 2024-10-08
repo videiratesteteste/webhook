@@ -146,19 +146,8 @@ def receber():
 
         if body_content:
 
-          # Se for uma string JSON, decodificar, caso contrário, apenas exibir o valor
-          if isinstance(body_content, str):
-
-            try:
-              decoded_body = json.loads(body_content)
-              print(decoded_body)  # Conteúdo decodificado corretamente
-
-            except json.JSONDecodeError:
-              print("Erro ao decodificar o conteúdo JSON.")
-
-          else:
-            # Se já for uma lista ou dicionário, exibir diretamente
-            print(body_content)
+          decoded_body = json.loads(body_content)
+          print(decoded_body)  # Conteúdo decodificado corretamente
 
         else:
           print("Chave 'body' não encontrada na resposta.")
