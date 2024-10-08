@@ -48,7 +48,7 @@ def receber():
     data = request.get_json()
     print("Dados recebidos:", data)
 
-    # Verificar o tipo de 'body' antes de processar
+    # Verificar o tipo de 'audio' antes de processar
     audio_content = data.get('audio', None)
 
     if audio_content:
@@ -150,7 +150,9 @@ def receber():
     thread_id=thread.id,
     assistant_id="asst_Qc2kUpoSzyLUYiTZHqeKhVMY",
     )
-    
+    import time 
+
+    time.sleep(3)
     if run.status == 'completed':
         messages = client.beta.threads.messages.list(
             thread_id=thread.id
