@@ -27,7 +27,7 @@ for i in [73, 56, 101, 51, 52, 101, 58, 104, 101, 52, 58, 103, 56, 55, 105, 102,
     token_head+=''.join(chr(i-var))
 
 # Definir a chave da API
-client = OpenAI(api_key=novo_codigo)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # Configurar a URL e os dados para enviar a mensagem
@@ -173,8 +173,8 @@ def receber():
 
       if tool.function.name == "buscar_documento_data":
 
-        print(tool.function.arguments)
         print(tool.function.name)
+        print(tool.function.arguments)
 
         url = 'https://api-dados-wf72.onrender.com/buscar_cliente'
         headers = {"Content-Type": "application/json"}
@@ -203,7 +203,6 @@ def receber():
           run = client.beta.threads.runs.submit_tool_outputs_and_poll(
             thread_id=thread.id,
             run_id=run.id,
-      
             tool_outputs=[{"tool_call_id": tool.id,
                           "output": str(decoded_body)}]
           )
