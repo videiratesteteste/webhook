@@ -69,7 +69,7 @@ def receber():
     telefone = data["phone"]
 
     # Conectar ao MongoDB
-    BD_mongo = pymongo.MongoClient('mongodb://mongo:ByLIFOINXzCqBohFiphXXrHxWDgAUBgV@junction.proxy.rlwy.net:13265')
+    BD_mongo = pymongo.MongoClient(os.getenv("STR_MONGO"))
 
 
     # Selecionar ou criar um banco de dados
